@@ -25,27 +25,27 @@ class LogFile{
 
     public function toArray($filename) {
 
+		$logs=collect([]);
 		if (file_exists($filename)) {
 
 			$file = fopen($filename, "r");
-			$logs=collect([]);
 			
 			while(!feof($file)) {
 				
 				$line= fgets($file);//fgets()函数从文件指针中读取一行
 				if (!trim($line)) break;
-				if (strpos(trim($line),'VS.Cue')===false) continue;				 
-				$row=$this->cue_decode($line);
-				
-				dd($row);
-				
+				if (strpos(trim($line),'VS.Cue')===false) continue;
+				$row=collect($this->cue_decode($line));				 
+				//$row->put('clip_file', $this->cue_decode($line));
+												
 				while(!feof($file)) {
 					$line= fgets($file);
 					if (!trim($line)) break;
-					if (strpos(trim($line),'SWT.SwitchPGM')===false) {						
+					if (strpos(trim($line),'VS.Play')===false) {						
 						continue;
 					} else {
-						$row->put('strSwitchPGM', $line);
+						$start_time=$this->play_decode($line);
+						$row->put('b_time', $start_time);
 						break;
 					}
 				}
@@ -54,10 +54,8 @@ class LogFile{
 			
 			fclose($file);
 									
-			return $logs;
 		}
-
-		return false;
+		return $logs;
     }
 
     public function getLastDate($filename) {
@@ -66,14 +64,13 @@ class LogFile{
     }
 
     public function cue_decode($line) {
-    	$row=collect([]);
-		$infos = explode(' ', $line);
-		// dd($infos);
-		$row->put('b_time', str_replace(':', '', $infos[1]));
-		$clipFile = substr(explode('VS.Cue', $infos[2])[1],1,-1);
-		$row->put('len', substr($infos[4], 0, -1));		
-		$row->put('clip_file', $clipFile);
-		return $row;
+		$temp=explode(',', substr($line, 42, -4));
+		$clipFile['clipFile']=substr($temp[1],7);
+		$clipFile['len']=$temp[3];
+		return $clipFile;
     }
     
+    public function play_decode($line) {    	
+    	return str_replace(':', '', substr($line, 28, 12));		
+    }
 }
