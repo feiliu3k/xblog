@@ -32,24 +32,36 @@ class LogFile{
 			
 			while(!feof($file)) {
 				
-				$line= fgets($file);//fgets()函数从文件指针中读取一行
-				if (!trim($line)) break;
-				if (strpos(trim($line),'VS.Cue')===false) continue;
-				$row=collect($this->cue_decode($line));				 
-				//$row->put('clip_file', $this->cue_decode($line));
-												
+				$line= fgets($file);
+				if (!trim($line)) continue;
+				if (strpos(trim($line),'VS.Cue')===false) continue;						 
+				
+				$cue_line=$line;
+				$play_line='';								
+				
 				while(!feof($file)) {
 					$line= fgets($file);
-					if (!trim($line)) break;
+					if (!trim($line)) continue;
+					
+					if (strpos(trim($line),'VS.Cue')) {
+						$cue_line=$line;
+						continue;
+					}
+
 					if (strpos(trim($line),'VS.Play')===false) {						
 						continue;
 					} else {
-						$start_time=$this->play_decode($line);
-						$row->put('b_time', $start_time);
+						$play_line=$line;
 						break;
 					}
 				}
-				$logs->push($row);				
+				
+				if ($cue_line && $play_line) {
+					$row=$this->cue_decode($cue_line);
+					$start_time=$this->play_decode($play_line);
+					$row->put('b_time', $start_time);
+					$logs->push($row);				
+				}	
 			}
 			
 			fclose($file);
@@ -65,8 +77,9 @@ class LogFile{
 
     public function cue_decode($line) {
 		$temp=explode(',', substr($line, 42, -4));
-		$clipFile['clipFile']=substr($temp[1],7);
-		$clipFile['len']=$temp[3];
+		$clipFile=collect([]);
+		$clipFile->put('clipFile', substr($temp[1],7));
+		$clipFile->put('len', $temp[3]);
 		return $clipFile;
     }
     
