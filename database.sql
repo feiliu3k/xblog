@@ -1,2 +1,0 @@
-字段：strClipFile
-表名：[BMI_CLIPFILEOBJECT] [BMI_CLIPINFO]

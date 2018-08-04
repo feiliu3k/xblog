@@ -6,16 +6,16 @@
 	require __DIR__.'./s_time.php';
 	
 	use Carbon\Carbon;
+	use ZenEnv\ZenEnv;
 
 	header("Content-type: text/html; charset=utf-8"); 
 	
 	$dotenv = new Dotenv\Dotenv(__DIR__);
-	//$dotenv->load();
-	$dotenv->overload();
-	$_ENV['DB_HOST'] ='aaa';
+	$dotenv->load();
+	//$dotenv->overload();
 
-	
-
+	$env = new ZenEnv(__DIR__.'./.env');	
+		
 	try {		
    
         $db_host = getenv('DB_HOST');   
@@ -89,8 +89,10 @@
 		});
 		//dd($contracts);
 		if ($str) {
-			file_put_contents($filename, $str, LOCK_EX);
-			//保存lastDate
+			file_put_contents($filename, $str, LOCK_EX);	
+			$env->set([
+				'Last_Date'=>$nextDate->format('Y-m-d')
+			]);		
 		}
 		
 		//fclose($file);
