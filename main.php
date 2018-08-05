@@ -30,19 +30,17 @@
         $PASSWORD=trim($_POST["PASSWORD"]);
 
         $env->set([
-            'DB_HOST' => trim($DB_HOST),
-            'DB_DATABASE' => trim($DB_DATABASE),
-            'DB_USERNAME' => trim($DB_USERNAME),
-            'DB_PASSWORD' => trim($DB_PASSWORD),
-            
-            'LOG_PATH' => trim($LOG_PATH),
-            'OUTPUT_PATH' => trim($OUTPUT_PATH),
-            'Last_Date' => trim($Last_Date),
-            'CHANNEL' => trim($CHANNEL),
-            'CH_TITLE' => trim($CH_TITLE),
-
-            'USER' => trim($USER),
-            'PASSWORD' => trim($PASSWORD)                
+            'DB_HOST' => $DB_HOST,
+            'DB_DATABASE' => $DB_DATABASE,
+            'DB_USERNAME' => $DB_USERNAME,
+            'DB_PASSWORD' => $DB_PASSWORD,            
+            'LOG_PATH' => $LOG_PATH,
+            'OUTPUT_PATH' => $OUTPUT_PATH,
+            'Last_Date' => $Last_Date,
+            'CHANNEL' => $CHANNEL,
+            'CH_TITLE' => $CH_TITLE,
+            'USER' => $USER,
+            'PASSWORD' => base64_encode($PASSWORD)
         ]); 
 
     }
@@ -206,7 +204,7 @@
                                 密码
                             </label>
                             <div class="col-md-8">
-                                <input type="password" class="form-control" name="PASSWORD" value="<?php echo trim($envs['PASSWORD']) ?>">
+                                <input type="password" class="form-control" name="PASSWORD" value="<?php echo base64_decode(trim($envs['PASSWORD'])) ?>">
                             </div>
                         </div>
 

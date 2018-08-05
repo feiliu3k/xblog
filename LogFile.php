@@ -84,6 +84,6 @@ class LogFile{
     }
     
     public function play_decode($line) {    	
-    	return str_replace(':', '', substr($line, 28, 12));		
+    	return substr($line, 28, 12);		
     }
 }
