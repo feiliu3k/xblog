@@ -7,12 +7,10 @@
 	
 	use Carbon\Carbon;
 	use ZenEnv\ZenEnv;
-
-	header("Content-type: text/html; charset=utf-8"); 
 	
 	$dotenv = new Dotenv\Dotenv(__DIR__);
 	$dotenv->load();
-	//$dotenv->overload();
+	// $dotenv->overload();
 
 	$env = new ZenEnv(__DIR__.'./.env');	
 		

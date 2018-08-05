@@ -13,8 +13,6 @@
 	
 	use Carbon\Carbon;
 	use ZenEnv\ZenEnv;
-
-	header("Content-type: text/html; charset=utf-8"); 
 	
 	$dotenv = new Dotenv\Dotenv(__DIR__);
 	$dotenv->load();
@@ -69,6 +67,18 @@
 		$str='';
 		
 		$contracts->each(function ($contract) use (&$str, $nextDate, $ch_title, $s_time) {
+			//计算播出时间
+			$bs=(int)floor((intval(substr($contract['b_time'],-3))+200)/1000);
+		
+			$bn=(intval(substr($contract['b_time'],-3))+200)%1000;
+			$bns=substr(str_pad($bn,3,'0',STR_PAD_LEFT),0,2);
+			
+			$snd=$nextDate->format('Y-m-d').substr($contract['b_time'],0,8);
+
+			$nd=Carbon::createFromFormat('Y-m-d H:i:s', $snd)->addSeconds($bs);
+
+
+
 			//计算广告长度
 			$len = intval($contract['len']);
 			$ilen = (int)floor($len/25);
@@ -90,7 +100,7 @@
 				}
 			}
 
-			$line=$nextDate->format('Ymd').substr($contract['b_time'],0,8).$slen.str_pad($ch_title, 16, " ").str_pad($s, 16, " ").$contract['strdescription']."\r\n";
+			$line=$nd->format('YmdHis').$bns.$slen.str_pad($ch_title, 16, " ").str_pad($s, 16, " ").$contract['strdescription']."\r\n";
 			$str=$str.$line;
 		});
 		//dd($contracts);
@@ -104,7 +114,6 @@
 		//fclose($file);
 		$nextDate = $nextDate->addDay();
     }
-
 ?>
 
 <!DOCTYPE html>
