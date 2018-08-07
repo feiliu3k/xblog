@@ -1,4 +1,4 @@
-
+﻿
 <?php
     session_start();
 
@@ -224,7 +224,7 @@
         <footer class="footer">
             <div class="container">
                 <p class="pull-left">
-                    由 XMAN 设计和编码
+                    北京中科大洋科技发展股份有限公司插播系统&nbsp;播后数据生成平台  
                 </p>
 
                 <p class="pull-right"><a href="mailto:name@email.com">联系我们</a></p>

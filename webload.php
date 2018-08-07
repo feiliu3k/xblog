@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 	session_start();
 
@@ -57,9 +57,11 @@
 
 	while ($nextDate<$toDay) {		
 		$filename = getenv('LOG_PATH').'XBlog['.$ch.'--主机]'.$nextDate->format('Ymd').'.txt';
+		
 		//返回插播的素材，播出时间，素材长度列表
-		$clipFiles = LogFile::getInstance()->toArray($filename);
+		$clipFiles = LogFile::getInstance()->toArray(iconv('UTF-8','GB2312',$filename));
 
+		
 		//从数据库中获取合同的信息	
 		$contracts=collect($dao->getADInfoByClipFiles($clipFiles));
 
@@ -94,13 +96,23 @@
 			$temp=substr($contract['b_time'],0,6);
 			$s='';			
 			foreach ($s_time as $key=>$val) {
-				if (($temp>=$val[0]) && ($temp>=$val[1])) {	
-					$s=$key;
+				if (($temp>=$val[0]) && ($temp>=$val[1])) {
+					$psi=(int)substr($temp,2,2);
+					if (($psi>=0) && ($psi<15)) {
+						$ps= substr($temp,0,2).'00';
+					} else if (($psi>=15) && ($psi<30)) {
+						$ps= substr($temp,0,2).'15';
+					} else if (($psi>=30) && ($psi<45)) {
+						$ps= substr($temp,0,2).'30';
+					} else if (($psi>=45) && ($psi<60)) {
+						$ps= substr($temp,0,2).'45';
+					} 
+					$s=$ps.$key;
 					break;
 				}
 			}
 
-			$line=$nd->format('YmdHis').$bns.$slen.str_pad($ch_title, 16, " ").str_pad($s, 16, " ").$contract['strdescription']."\r\n";
+			$line=$nd->format('YmdHis').$bns.$slen.str_pad($ch_title, 16, " ").str_pad($s, 20, " ").$contract['strdescription']."\r\n";
 			$str=$str.$line;
 		});
 		//dd($contracts);
@@ -194,7 +206,7 @@
         <footer class="footer">
             <div class="container">
                 <p class="pull-left">
-                    由 XMAN 设计和编码
+                    北京中科大洋科技发展股份有限公司插播系统&nbsp;播后数据生成平台  
                 </p>
 
                 <p class="pull-right"><a href="mailto:name@email.com">联系我们</a></p>

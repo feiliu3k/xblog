@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 use tightenco\collect;
 //单例
 class LogFile{
@@ -26,8 +26,9 @@ class LogFile{
     public function toArray($filename) {
 
 		$logs=collect([]);
+		
 		if (file_exists($filename)) {
-
+			
 			$file = fopen($filename, "r");
 			
 			while(!feof($file)) {
