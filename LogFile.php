@@ -79,7 +79,7 @@ class LogFile{
     public function cue_decode($line) {
 		$temp=explode(',', substr($line, 42, -4));
 		$clipFile=collect([]);
-		$clipFile->put('clipFile', substr($temp[1],7));
+		$clipFile->put('strItemID', substr($temp[5],5));
 		$clipFile->put('len', $temp[3]);
 		return $clipFile;
     }

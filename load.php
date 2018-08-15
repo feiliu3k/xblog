@@ -52,10 +52,10 @@
 	while ($nextDate<$toDay) {		
 		$filename = getenv('LOG_PATH').'XBlog['.$ch.'--主机]'.$nextDate->format('Ymd').'.txt';
 		//返回插播的素材，播出时间，素材长度列表
-		$clipFiles = LogFile::getInstance()->toArray(iconv('UTF-8','GB2312',$filename));
+		$strItemIDs = LogFile::getInstance()->toArray(iconv('UTF-8','GB2312',$filename));
 
 		//从数据库中获取合同的信息	
-		$contracts=collect($dao->getADInfoByClipFiles($clipFiles));		
+		$contracts=collect($dao->getADInfoByItemIDs($strItemIDs));		
 
 		$filename=getenv('OUTPUT_PATH').$nextDate->format('Ymd').$ch.'.txt';
 		$str='';
@@ -71,8 +71,6 @@
 
 			$nd=Carbon::createFromFormat('Y-m-d H:i:s', $snd)->addSeconds($bs);
 
-
-
 			//计算广告长度
 			$len = intval($contract['len']);
 			$ilen = (int)floor($len/25);
@@ -82,8 +80,7 @@
 			$s=$ilen-$h*3600-$m*60;		
 			$f=(int)($len%25);
 
-			$slen=str_pad($h,2,'0',STR_PAD_LEFT).str_pad($m,2,'0',STR_PAD_LEFT).str_pad($s,2,'0',STR_PAD_LEFT).str_pad($f,2,'0',STR_PAD_LEFT);
-			
+			$slen=str_pad($h,2,'0',STR_PAD_LEFT).str_pad($m,2,'0',STR_PAD_LEFT).str_pad($s,2,'0',STR_PAD_LEFT).str_pad($f,2,'0',STR_PAD_LEFT);			
 			//根据播出时间，计算得出时间段
 			$temp=substr($contract['b_time'],0,6);
 			$s='';			

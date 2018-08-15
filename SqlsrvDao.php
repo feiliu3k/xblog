@@ -8,22 +8,22 @@ class SqlsrvDao{
        $this->dbh=$dbh;      
     }
 
-    public function getADInfoByClipFile($clipFile)
+    public function getADInfoBygetADInfoByItemID($strItemID)
     {        
-        $sql='select top 1 stritemid, strclipfile, strdescription, lduration, strparentitemid from BMI_ADLISTITEM where strclipfile=?';     
+        $sql='select top 1 STRITEMID, STRDESCRIPTION, LDURATION, STRSCEDULEPLAYTIME, STRPARENTITEMID, STRCHID from TMP_PLAYINGLIST where STRITEMID=?';     
         $stmt = $this->dbh->prepare($sql);
-        $stmt->bindValue(1, $clipFile, PDO::PARAM_STR);
+        $stmt->bindValue(1, $strItemID, PDO::PARAM_STR);
         $stmt->execute();       
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;             
     }
 
-    public function getADInfoByClipFiles($clipFiles)
+    public function getADInfoByItemIDs($strItemIDs)
     {        
         try { 
             $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);//异常模式  
             $this->dbh->beginTransaction();//开启事物  
-            $sql = "select top 1 strdescription, lduration from BMI_ADLISTITEM where strclipfile=?";
+            $sql = "select top 1 STRITEMID, STRDESCRIPTION, LDURATION, STRSCEDULEPLAYTIME, STRPARENTITEMID, STRCHID from TMP_PLAYINGLIST where STRITEMID=?";
 
             // $clipFiles->map(function($item, $key) use ($sql) {
             //     $stmt = $this->dbh->prepare($sql);
@@ -34,18 +34,18 @@ class SqlsrvDao{
             //     return $item;     
             // }
 
-            foreach ($clipFiles as $clipFile) {                               
+            foreach ($strItemIDs as $strItemID) {                               
                 $stmt = $this->dbh->prepare($sql);
-                $stmt->bindValue(1, $clipFile['clipFile'], PDO::PARAM_STR);
+                $stmt->bindValue(1, $strItemID['strItemID'], PDO::PARAM_STR);
                 $stmt->execute();       
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
                 //$clipFile=array_merge($clipFile, $result) ;
-                $clipFile->put('strdescription', $result['strdescription']);
-                $clipFile->put('lduration', $result['lduration']);  
+                $strItemID->put('strdescription', $result['STRDESCRIPTION']);
+                $strItemID->put('lduration', $result['LDURATION']);  
             }
 
             $this->dbh->commit();//执行事物的提交操作*/  
-            return $clipFiles;
+            return $strItemIDs;
         }catch (PDOException $e){  
             die("Error!: ".$e->getMessage().'<br>');  
             $this->dbh->rollBack();//执行事物的回滚操作  
