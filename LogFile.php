@@ -37,32 +37,43 @@ class LogFile{
 				if (!trim($line)) continue;
 				if (strpos(trim($line),'VS.Cue')===false) continue;						 
 				
-				$cue_line=$line;
-				$play_line='';								
-				
+				$cue_line = $line;
+				$play_line = '';								
+				$stop_line = '';
+
 				while(!feof($file)) {
 					$line= fgets($file);
 					if (!trim($line)) continue;
 					
 					if (strpos(trim($line),'VS.Cue')) {
-						$cue_line=$line;
-						continue;
+						//处理
+						if (($cue_line) && ($play_line)) {
+							$row=$this->cue_decode($cue_line);
+							$start_time = $this->time_decode($play_line);
+							$stop_time = $this->time_decode($stop_line);
+							$row->put('b_time', $start_time);
+							$row->put('e_time', $stop_time);
+							$logs->push($row);
+						}
+						$cue_line = '';
+						$play_line = '';
+						$stop_line = '';
+						$cue_line=$line;						
 					}
 
-					if (strpos(trim($line),'VS.Play')===false) {						
-						continue;
-					} else {
-						$play_line=$line;
-						break;
+					if (strpos(trim($line),'VS.Play')) {
+						$play_line=$line;						
 					}
+
+					if (strpos(trim($line),'VS.Stop')) {
+						$stop_line=$line;						
+					}
+
+					continue;
+					
 				}
 				
-				if ($cue_line && $play_line) {
-					$row=$this->cue_decode($cue_line);
-					$start_time=$this->play_decode($play_line);
-					$row->put('b_time', $start_time);
-					$logs->push($row);				
-				}	
+				
 			}
 			
 			fclose($file);
@@ -79,12 +90,17 @@ class LogFile{
     public function cue_decode($line) {
 		$temp=explode(',', substr($line, 42, -4));
 		$clipFile=collect([]);
-		$clipFile->put('strItemID', substr($temp[5],5));
+		$clipFile->put('desc', iconv('GB2312','UTF-8',substr($temp[5],6)));
+		$clipFile->put('s_time', iconv('GB2312','UTF-8',substr($temp[7],10)));
 		$clipFile->put('len', $temp[3]);
 		return $clipFile;
     }
-    
-    public function play_decode($line) {    	
-    	return substr($line, 28, 12);		
+        
+    public function time_decode($line) {  
+    	if (trim($line)) {
+	    	$temp=explode(' ', $line);
+	    	return $temp[1];
+    	}
+    	return false;
     }
 }

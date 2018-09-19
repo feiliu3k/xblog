@@ -27,7 +27,7 @@
 
                     <!-- Branding Image -->
                     <a class="navbar-brand" href="#">
-                        XBLog
+                        ZBLog
                     </a>
                 </div>
 
